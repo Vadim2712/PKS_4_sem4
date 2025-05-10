@@ -1,0 +1,54 @@
+﻿@model IEnumerable<TouristGuideApp.Models.City>
+
+@{
+    ViewData["Title"] = "Города";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-controller="Cities" asp-action="Index" method="get" class="row g-3 mb-4 align-items-center">
+    <div class="col-auto">
+        <label for="searchString" class="visually-hidden">Поиск</label>
+        <input type="text" class="form-control" id="searchString" name="SearchString" placeholder="Название города или регион" value="@ViewData["CurrentFilter"]">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Поиск</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Сбросить</a>
+    </div>
+</form>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card h-100">
+                @if (!string.IsNullOrEmpty(item.PhotoImageUrl))
+                {
+                    <img src="@Url.Content(item.PhotoImageUrl)" class="card-img-top" alt="Фото @item.Name" style="height: 200px; object-fit: cover;">
+                }
+                else
+                {
+                    <img src="~/images/placeholder.png" class="card-img-top" alt="Нет фото" style="height: 200px; object-fit: cover;"> @* Запасное изображение *@
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+                    <p class="card-text mb-1">
+                        <small class="text-muted">
+                            <strong>Регион:</strong> @(item.Region ?? "Не указан")<br />
+                            <strong>Население:</strong> @(item.Population.HasValue ? item.Population.Value.ToString("N0") : "Н/Д")
+                        </small>
+                    </p>
+                    @* Здесь можно вывести краткое описание, если оно есть в модели City *@
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm">Подробнее</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <p class="mt-3">Города по вашему запросу не найдены.</p>
+}

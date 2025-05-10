@@ -1,0 +1,78 @@
+﻿@model TouristGuideApp.Models.City
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Cities" asp-action="Index">Города</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<h1>@Html.DisplayFor(model => model.Name)</h1>
+<hr />
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.PhotoImageUrl))
+        {
+            <img src="@Url.Content(Model.PhotoImageUrl)" alt="Фото @Model.Name" class="img-fluid rounded shadow-sm mb-3" />
+        }
+        @if (!string.IsNullOrEmpty(Model.CoatOfArmsImageUrl))
+        {
+            <img src="@Url.Content(Model.CoatOfArmsImageUrl)" alt="Герб @Model.Name" class="img-fluid rounded" style="max-height: 150px; display: block; margin-top: 10px;" />
+        }
+    </div>
+    <div class="col-md-8">
+        <h4>Основная информация</h4>
+        <dl class="row">
+            <dt class="col-sm-3">Регион:</dt>
+            <dd class="col-sm-9">@(Model.Region ?? "Не указан")</dd>
+
+            <dt class="col-sm-3">Население:</dt>
+            <dd class="col-sm-9">@(Model.Population.HasValue ? Model.Population.Value.ToString("N0") : "Н/Д")</dd>
+        </dl>
+
+        <h4>История</h4>
+        <p style="white-space: pre-line;">@(Model.History ?? "История не добавлена.")</p>
+    </div>
+</div>
+
+<h3>Достопримечательности в городе @Model.Name</h3>
+@if (Model.Attractions != null && Model.Attractions.Any())
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
+        @foreach (var attraction in Model.Attractions)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(attraction.PhotoImageUrl))
+                    {
+                        <img src="@Url.Content(attraction.PhotoImageUrl)" class="card-img-top" alt="@attraction.Name" style="height: 180px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <img src="~/images/placeholder.png" class="card-img-top" alt="Нет фото" style="height: 180px; object-fit: cover;">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@Html.DisplayFor(modelItem => attraction.Name)</h5>
+                        <p class="card-text"><small>@Html.DisplayFor(modelItem => attraction.Description)</small></p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-controller="Attractions" asp-action="Details" asp-route-id="@attraction.Id" class="btn btn-outline-primary btn-sm">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Для этого города достопримечательности еще не добавлены.</p>
+}
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-outline-secondary">Назад к списку городов</a>
+</div>

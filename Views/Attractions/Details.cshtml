@@ -1,0 +1,75 @@
+﻿@model TouristGuideApp.Models.Attraction
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Cities" asp-action="Index">Города</a></li>
+        @if (Model.City != null)
+        {
+            <li class="breadcrumb-item"><a asp-controller="Cities" asp-action="Details" asp-route-id="@Model.CityId">@Model.City.Name</a></li>
+        }
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<h1>@Html.DisplayFor(model => model.Name)</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+        @if (!string.IsNullOrEmpty(Model.PhotoImageUrl))
+        {
+            <img src="@Url.Content(Model.PhotoImageUrl)" alt="Фото @Model.Name" class="img-fluid rounded shadow-sm mb-3" />
+        }
+        else
+        {
+            <img src="~/images/placeholder.png" alt="Нет фото" class="img-fluid rounded shadow-sm mb-3" />
+        }
+    </div>
+    <div class="col-md-7">
+        <h4>Основная информация</h4>
+        <dl class="row">
+            @if (Model.City != null)
+            {
+                <dt class="col-sm-4">Город:</dt>
+                <dd class="col-sm-8"><a asp-controller="Cities" asp-action="Details" asp-route-id="@Model.CityId">@Html.DisplayFor(model => model.City.Name)</a></dd>
+            }
+
+            <dt class="col-sm-4">Краткое описание:</dt>
+            <dd class="col-sm-8">@(Model.Description ?? "Не указано")</dd>
+
+            <dt class="col-sm-4">Часы работы:</dt>
+            <dd class="col-sm-8">@(Model.OpeningHours ?? "Не указаны")</dd>
+
+            <dt class="col-sm-4">Стоимость посещения:</dt>
+            <dd class="col-sm-8">
+                @if (Model.TicketPrice.HasValue)
+                {
+                    @Model.TicketPrice.Value.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("ru-RU"))
+                    // Форматирование как валюты
+                }
+                else
+                {
+                    @:Бесплатно или не указано
+                }
+            </dd>
+        </dl>
+
+        <h4>История</h4>
+        <p style="white-space: pre-line;">@(Model.History ?? "История не добавлена.")</p>
+    </div>
+</div>
+
+<div class="mt-4">
+    @if (Model.CityId != 0)
+    {
+        <a asp-controller="Cities" asp-action="Details" asp-route-id="@Model.CityId" class="btn btn-outline-secondary">Назад к городу</a>
+    }
+    else
+    {
+        <a asp-controller="Cities" asp-action="Index" class="btn btn-outline-secondary">К списку городов</a>
+    }
+</div>
